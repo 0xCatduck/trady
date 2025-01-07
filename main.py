@@ -18,63 +18,63 @@ class DuckLogo(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         
-        # 計算中心點和尺寸
+        # calculate the center and size of the logo
         center = self.rect().center()
         size = min(self.width(), self.height()) - 20
         
-        # 1. 繪製頭部（白色圓形）
+        # 1. draw the head
         painter.setPen(Qt.NoPen)
         painter.setBrush(QColor('white'))
         head_rect = QRectF(center.x() - size/2, center.y() - size/2, size, size)
         painter.drawEllipse(head_rect)
         
-        # 2. 繪製嘴巴
+        # 2. draw the beak
         beak_path = QPainterPath()
         
-        # 修改嘴巴的大小和位置
-        beak_width = size * 0.5  # 加寬
-        beak_height = size * 0.25  # 降低高度
+        # start from the top of the beak
+        beak_width = size * 0.5  # increase width
+        beak_height = size * 0.25  # decrease height
         beak_x = center.x() - beak_width/2
-        beak_y = center.y() + size * 0.05  # 位置微調
+        beak_y = center.y() + size * 0.05  # move down
         
-        # 上嘴（較小）
+        # upper beak(smaller)
         upper_beak = QRectF(beak_x, beak_y - beak_height/2, 
                            beak_width, beak_height)
         
-        # 下嘴（較大）
+        # lower beak(larger)
         lower_beak = QRectF(beak_x - beak_width * 0.05, beak_y,
                            beak_width * 1.1, beak_height)
         
-        # 先畫下嘴
-        painter.setBrush(QColor(255, 140, 0))  # 橙色
+        # draw the beak
+        painter.setBrush(QColor(255, 140, 0))  # orange color
         painter.drawEllipse(lower_beak)
         
-        # 再畫上嘴
+        # draw the upper beak
         painter.drawEllipse(upper_beak)
         
-        # 3. 繪製眼睛
+        # 3. draw the eyes
         painter.setBrush(QColor('black'))
         eye_size = size * 0.08
-        eye_spacing = size * 0.2  # 眼睛之間的間距
+        eye_spacing = size * 0.2  # space between eyes
         
-        # 左眼
+        # left eye
         left_eye_x = center.x() - eye_spacing/2
-        eye_y = center.y() - size * 0.15  # 往上移
+        eye_y = center.y() - size * 0.15  # move up
         painter.drawEllipse(QPointF(left_eye_x, eye_y), eye_size, eye_size)
         
-        # 右眼
+        # right eye
         right_eye_x = center.x() + eye_spacing/2
         painter.drawEllipse(QPointF(right_eye_x, eye_y), eye_size, eye_size)
         
-        # 4. 為每個眼睛添加高光
+        # 4. draw the highlight for the eyes
         painter.setBrush(QColor('white'))
         highlight_size = eye_size * 0.3
         
-        # 左眼高光
+        # left eye highlight
         painter.drawEllipse(QPointF(left_eye_x + eye_size * 0.2, eye_y - eye_size * 0.2),
                           highlight_size, highlight_size)
                           
-        # 右眼高光
+        # right eye highlight
         painter.drawEllipse(QPointF(right_eye_x + eye_size * 0.2, eye_y - eye_size * 0.2),
                           highlight_size, highlight_size)
 
@@ -85,29 +85,29 @@ class SplashScreen(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setFixedSize(600, 400)
         
-        # 設定視窗居中
+        # set the window in the center of the screen
         screen = QApplication.primaryScreen().geometry()
         self.move(
             screen.center().x() - self.width() // 2,
             screen.center().y() - self.height() // 2
         )
         
-        # 創建並定位 Logo
+        # create the logo
         self.logo = DuckLogo(self)
         self.logo.setGeometry((self.width() - 200) // 2, 50, 200, 200)
         
-        # 創建標籤
+        # create the labels
         self.label_title = QLabel("TRADY", self)
         self.label_description = QLabel("Use Trady, Trade Easy", self)
         
-        # 設定字體
+        # set the fonts
         title_font = QFont("Arial", 48, QFont.Bold)
         desc_font = QFont("Arial", 18)
         
         self.label_title.setFont(title_font)
         self.label_description.setFont(desc_font)
         
-        # 設定樣式
+        # set the styles
         style = """
             QLabel {
                 color: white;
@@ -117,22 +117,22 @@ class SplashScreen(QWidget):
         self.label_title.setStyleSheet(style)
         self.label_description.setStyleSheet(style)
         
-        # 添加陰影效果
+        # add shadow effect
         self.add_shadow_effect(self.label_title)
         self.add_shadow_effect(self.label_description)
         
-        # 初始隱藏文字
+        # initially hide the labels
         self.label_title.hide()
         self.label_description.hide()
         
-        # 設定位置
+        # set the positions of the labels
         self.label_title.move((self.width() - self.label_title.width()) // 2, 250)
-        self.label_description.move(800, 320)  # 初始在右側外
+        self.label_description.move(800, 320)  # initially outside the window
         
-        # 設定初始不透明度
+        # set the initial opacity
         self.setWindowOpacity(0)
         
-        # 開始動畫序列
+        # start the animation sequence
         QTimer.singleShot(100, self.start_animation_sequence)
     
     def add_shadow_effect(self, widget):
@@ -153,20 +153,20 @@ class SplashScreen(QWidget):
         painter.fillRect(self.rect(), gradient)
     
     def start_animation_sequence(self):
-        # 1. 整體淡入（包含鴨子）
+        # 1. fade in the whole window (including the duck)
         self.fade_in = QPropertyAnimation(self, b"windowOpacity")
         self.fade_in.setDuration(1000)
         self.fade_in.setStartValue(0)
         self.fade_in.setEndValue(1)
         self.fade_in.start()
         
-        # 2. 等待後顯示標題
+        # 2. wait and then show the title
         QTimer.singleShot(0, self.show_title)
         
-        # 3. 顯示描述
+        # 3. show the description
         QTimer.singleShot(1000, self.show_description)
         
-        # 4. 結束動畫
+        # 4. finish the splash screen
         QTimer.singleShot(4000, self.finish_splash)
     
     def show_title(self):
@@ -237,7 +237,7 @@ class Launcher(QMainWindow):
         self.init_ui()
         
     def init_ui(self):
-        # 設定整體樣式
+        # set the overall style
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #1e1e1e;
@@ -258,13 +258,13 @@ class Launcher(QMainWindow):
             }
         """)
         
-        # 建立菜單欄
+        # set the menu bar
         menubar = self.menuBar()
         file_menu = menubar.addMenu('File')
         settings_menu = menubar.addMenu('Settings')
         help_menu = menubar.addMenu('Help')
         
-        # 添加菜單項目
+        # add menu items
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
@@ -272,7 +272,7 @@ class Launcher(QMainWindow):
         about_action = QAction('About', self)
         help_menu.addAction(about_action)
         
-        # 中央部件
+        # central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
@@ -284,21 +284,21 @@ class Launcher(QMainWindow):
         logo_label.setFixedSize(120, 120)
         layout.addWidget(logo_label, alignment=Qt.AlignCenter)
         
-        # 版本標籤
+        # version label
         version_label = QLabel("Trady Trading Suite")
         version_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(version_label)
         
-        # 添加一些空間
+        # add some space
         layout.addSpacing(20)
         
-        # 按鈕
+        # buttons
         crypto_btn = StyledButton("CryptoKeeper", "SP_DialogSaveButton")
-        crypto_btn.clicked.connect(lambda: self.start_program('python digital_legacy_safe/main.py'))
+        crypto_btn.clicked.connect(lambda: self.start_program('python path/to/crypto_keeper/main.py'))
         layout.addWidget(crypto_btn)
         
         macro_btn = StyledButton("Makro", "SP_CommandLink")
-        macro_btn.clicked.connect(lambda: self.start_program('python path/to/macro_tool/main.py'))
+        macro_btn.clicked.connect(lambda: self.start_program('python path/to/makro_trader/main.py'))
         layout.addWidget(macro_btn)
         
         asset_btn = StyledButton("AssetTracker", "SP_FileDialogContentsView")
@@ -307,12 +307,12 @@ class Launcher(QMainWindow):
         
         layout.addStretch()
         
-        # 狀態列
+        # status bar
         status = QStatusBar()
         self.setStatusBar(status)
-        status.showMessage('Version 1.0.0')
+        status.showMessage('Version 0.0.2')
         
-        # 系統托盤
+        # system tray
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(self.style().standardIcon(QStyle.SP_ComputerIcon))
         
@@ -337,7 +337,7 @@ class Launcher(QMainWindow):
     
     def closeEvent(self, event):
         self.hide()
-        event.ignore()  # 不真正關閉程式，而是最小化到托盤
+        event.ignore()  # don't really close the window, just hide it
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
